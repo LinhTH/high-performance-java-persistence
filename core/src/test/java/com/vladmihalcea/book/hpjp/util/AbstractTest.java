@@ -303,7 +303,7 @@ public abstract class AbstractTest {
     }
 
     protected void additionalProperties(Properties properties) {
-
+        properties.setProperty(AvailableSettings.SHOW_SQL, "true");
     }
 
     protected DataSourceProxyType dataSourceProxyType() {
