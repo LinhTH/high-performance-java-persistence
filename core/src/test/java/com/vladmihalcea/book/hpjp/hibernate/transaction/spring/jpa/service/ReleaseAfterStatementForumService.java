@@ -10,15 +10,9 @@ import java.util.List;
  * @author Vlad Mihalcea
  */
 @Service
-public interface ForumService {
+public interface ReleaseAfterStatementForumService {
 
-    Post newPost(String title, String... tags);
-
-    List<Post> findAllByTitle(String title);
-
-    Post findById(Long id);
-
-    PostDTO getPostDTOById(Long id);
+    Post newPost(String title);
 
     PostDTO savePostTitle(Long id, String title);
 }

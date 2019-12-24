@@ -1,20 +1,15 @@
 package com.vladmihalcea.book.hpjp.hibernate.identifier;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.junit.Test;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 public class PooledSequenceIdentifierTest extends AbstractPooledSequenceIdentifierTest {
 
     @Override
     protected Class<?>[] entities() {
-        return new Class<?>[] {
-                Post.class,
+        return new Class<?>[]{
+            Post.class,
         };
     }
 
@@ -27,21 +22,51 @@ public class PooledSequenceIdentifierTest extends AbstractPooledSequenceIdentifi
         insertSequences();
     }
 
+    @Test
+    public void testPooledIdentifierGenerator() {
+        doInJPA(entityManager -> {
+            for (int i = 0; i < 4; i++) {
+                Post post = new Post();
+                post.setTitle(
+                    String.format(
+                        "High-Performance Java Persistence, Part %d",
+                        i + 1
+                    )
+                );
+
+                entityManager.persist(post);
+            }
+        });
+    }
+
     @Entity(name = "Post")
     public static class Post {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pooled")
-        @GenericGenerator(
-            name = "pooled",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                @Parameter(name = "sequence_name", value = "sequence"),
-                @Parameter(name = "initial_value", value = "1"),
-                @Parameter(name = "increment_size", value = "3"),
-                @Parameter(name = "optimizer", value = "pooled")
-            }
+        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_sequence")
+        @SequenceGenerator(
+            name = "post_sequence",
+            sequenceName = "post_sequence",
+            allocationSize = 3
         )
         private Long id;
+
+        private String title;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
     }
 }
